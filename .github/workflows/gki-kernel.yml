@@ -351,16 +351,16 @@ jobs:
          cd "$CONFIG"
          echo "Cloning rwMem repository..."
          git clone https://github.com/ri-char/rwMem
+         echo "Copying rwMem to kernel drivers folder..."
+         cp -r rwMem ./common/drivers/
          echo "Applying overflow_handler_context patch..."
-         cd rwMem
-         if [ -f "patch/overflow_handler_context.patch" ]; then
-         patch -p1 < patch/overflow_handler_context.patch
+         if [ -f "rwMem/patch/overflow_handler_context.patch" ]; then
+         cd common
+         patch -p1 < ../rwMem/patch/overflow_handler_context.patch
+         cd ..
          else
          echo "Warning: overflow_handler_context.patch not found in patch folder"
          fi
-         cd ..
-         echo "Copying rwMem to kernel drivers folder..."
-         cp -r rwMem ./common/drivers/
          echo "Adding rwMem to drivers Makefile..."
          echo "obj-\$(CONFIG_RW_MEM) += rwMem/" >> ./common/drivers/Makefile
          echo "CONFIG_RW_MEM=y" >> ./common/arch/arm64/configs/gki_defconfig
