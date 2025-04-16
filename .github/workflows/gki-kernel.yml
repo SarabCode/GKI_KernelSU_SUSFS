@@ -345,36 +345,25 @@ jobs:
 
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./common/build.config.gki
-
-- name: Add rwMem Driver
-  run: |
-    echo "Changing to configuration directory: $CONFIG..."
-    cd "$CONFIG"
-    
-    # Clone rwMem repository
-    echo "Cloning rwMem repository..."
-    git clone https://github.com/ri-char/rwMem
-    
-    # Apply overflow_handler_context patch
-    echo "Applying overflow_handler_context patch..."
-    cd rwMem
-    if [ -f "patch/overflow_handler_context.patch" ]; then
-      patch -p1 < patch/overflow_handler_context.patch
-    else
-      echo "Warning: overflow_handler_context.patch not found in patch folder"
-    fi
-    cd ..
-    
-    # Copy rwMem folder to kernel drivers
-    echo "Copying rwMem to kernel drivers folder..."
-    cp -r rwMem ./common/drivers/
-    
-    # Add to drivers/Makefile
-    echo "Adding rwMem to drivers Makefile..."
-    echo "obj-\$(CONFIG_RW_MEM) += rwMem/" >> ./common/drivers/Makefile
-    
-    # Add Kconfig entry to enable the driver
-    echo "CONFIG_RW_MEM=y" >> ./common/arch/arm64/configs/gki_defconfig
+      - name: Add rwMem Driver
+        run: |
+         echo "Changing to configuration directory: $CONFIG..."
+         cd "$CONFIG"
+         echo "Cloning rwMem repository..."
+         git clone https://github.com/ri-char/rwMem
+         echo "Applying overflow_handler_context patch..."
+         cd rwMem
+         if [ -f "patch/overflow_handler_context.patch" ]; then
+         patch -p1 < patch/overflow_handler_context.patch
+         else
+         echo "Warning: overflow_handler_context.patch not found in patch folder"
+         fi
+         cd ..
+         echo "Copying rwMem to kernel drivers folder..."
+         cp -r rwMem ./common/drivers/
+         echo "Adding rwMem to drivers Makefile..."
+         echo "obj-\$(CONFIG_RW_MEM) += rwMem/" >> ./common/drivers/Makefile
+         echo "CONFIG_RW_MEM=y" >> ./common/arch/arm64/configs/gki_defconfig
       
       - name: Config BBR
         #if: ${{ inputs.kernel_version != '6.6' }}
